@@ -47,7 +47,7 @@ for root, dirs, files in os.walk(folder_path):
                         
                         # 根据需要可以设置更小的点大小和透明度
                         desired_size = 5  
-                        desired_alpha = 0.1 
+                        desired_alpha = 0.5 
                         
                         ax.scatter(rx_filtered, ry_filtered, s=desired_size, alpha=desired_alpha)
                         
