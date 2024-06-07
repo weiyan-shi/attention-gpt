@@ -1,7 +1,7 @@
 import os
 import json
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# import matplotlib.pyplot as plt
+# from mpl_toolkits.mplot3d import Axes3D
 from sklearn.cluster import DBSCAN
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import pairwise_distances, davies_bouldin_score, silhouette_score, calinski_harabasz_score
@@ -13,8 +13,8 @@ def is_valid_point(x, y, z):
     return x is not None and y is not None and z is not None
 
 # 设置要搜索的文件夹路径
-folder_path = 'C:\\Users\\weiyan.shi\\Desktop\\attention-gpt\\DREAMdataset'
-output_folder_path = 'C:\\Users\\weiyan.shi\\Desktop\\attention-gpt\\output'  # 图片保存的路径
+folder_path = 'C:\\Users\\86178\\Desktop\\attention-gpt\\DREAMdataset'
+output_folder_path = 'C:\\Users\\86178\\Desktop\\attention-gpt\\output'  # 保存的路径
 
 ados_path = 'Data Pre-Post ADOS (all included).xlsx'
 df = pd.read_excel(ados_path, usecols=['user_id', 'ADOS_Total_pre', 'ADOS_Total_post'])
@@ -26,11 +26,11 @@ df = pd.read_excel(ados_path, usecols=['user_id', 'ADOS_Total_pre', 'ADOS_Total_
 for root, dirs, files in os.walk(folder_path):
     for subdir in dirs:
         # if subdir == 'User 3':
-          participant_data = {'user': [], 'filename': [], 'task': [], 'condition': [], 'ados_total_pre':[], 'ados_total_post':[], 'd_db':[],'d_s':[],'d_ch':[], 'd_n_pc':[]}
+          participant_data = {'user': [], 'filename': [], 'condition': [], 'ados_total_pre':[], 'ados_total_post':[], 'd_db':[],'d_s':[],'d_ch':[], 'd_n_pc':[], 'condition':[], 'ability':[], 'difficulty_level':[]}
           input_subfolder_path = os.path.join(folder_path, subdir)
-          output_subfolder_path = os.path.join(output_folder_path, subdir)
-          if not os.path.exists(output_subfolder_path):
-              os.makedirs(output_subfolder_path)
+        #   output_subfolder_path = os.path.join(output_folder_path, subdir)
+        #   if not os.path.exists(output_subfolder_path):
+        #       os.makedirs(output_subfolder_path)
           for filename in os.listdir(input_subfolder_path):
             if filename.endswith('.json'):
               with open(os.path.join(input_subfolder_path, filename), 'r', encoding='utf-8') as file:
@@ -116,7 +116,8 @@ for root, dirs, files in os.walk(folder_path):
                             noise_percentage = (len(noise_points) / total_points) * 100
                             participant_data['d_n_pc'].append(noise_percentage)
 
-                            participant_data['task'].append(data['task']['ability'])
+                            participant_data['ability'].append(data['task']['ability'])
+                            participant_data['difficulty_level'].append(data['task']['difficultyLevel'])
                             participant_data['condition'].append(data['condition'])
                             user = int(subdir.split(' ')[1])
                             participant_data['user'].append(user)
