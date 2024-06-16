@@ -14,6 +14,7 @@ grouped = df.groupby(['condition', 'ability', 'difficulty_level'])['d_db', 'd_s'
 # 输出结果查看
 print(grouped)
 
+
 # 可视化示例，画出某些变量的分布
 sns.boxplot(x='condition', y='d_db', hue='difficulty_level', data=df)
 plt.show()
