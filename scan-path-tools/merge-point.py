@@ -3,6 +3,7 @@ import json
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+from scipy.spatial.distance import pdist, squareform
 
 # Ensure the TkAgg backend is used
 plt.switch_backend('TkAgg')
@@ -10,6 +11,34 @@ plt.ion()  # Turn on interactive mode
 
 def is_valid_point(x, y, z):
     return x is not None and y is not None and z is not None
+
+def merge_gaze_points(coords, avg_distance):
+    distance_matrix = squareform(pdist(coords))
+    merged_points = []
+    visited = set()
+
+    for i in range(len(coords)):
+        if i in visited:
+            continue
+
+        group = [coords[i]]
+        visited.add(i)
+
+        for j in range(i + 1, len(coords)):
+            if j in visited:
+                continue
+
+            if distance_matrix[i][j] < avg_distance:
+                group.append(coords[j])
+                visited.add(j)
+
+        if group:
+            merged_x = np.mean([p[0] for p in group])
+            merged_y = np.mean([p[1] for p in group])
+            merged_z = np.mean([p[2] for p in group])
+            merged_points.append((merged_x, merged_y, merged_z))
+
+    return merged_points
 
 folder_path = 'C:\\Users\\86178\\Desktop\\attention-gpt\\DREAMdataset'
 output_folder_path = 'C:\\Users\\weiyan.shi\\Desktop\\attention-gpt\\output'
@@ -45,7 +74,12 @@ for root, dirs, files in os.walk(folder_path):
                                     print(f"No valid eye gaze points in {filename}.")
                                     continue
 
-                                rx_all, ry_all, rz_all = zip(*coords)
+                                # 计算平均距离
+                                avg_distance = 0.3*np.mean(pdist(coords))
+
+                                # 合并距离小于平均距离的点
+                                merged_coords = merge_gaze_points(coords, avg_distance)
+                                rx_all, ry_all, rz_all = zip(*merged_coords)
 
                                 desired_size = 2
                                 desired_alpha = 0.7

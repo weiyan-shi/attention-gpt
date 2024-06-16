@@ -1,8 +1,8 @@
 import os
 import json
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+from scipy.spatial.distance import pdist
 
 # Ensure the TkAgg backend is used
 plt.switch_backend('TkAgg')
@@ -18,8 +18,6 @@ for root, dirs, files in os.walk(folder_path):
     for subdir in dirs:
         input_subfolder_path = os.path.join(folder_path, subdir)
         output_subfolder_path = os.path.join(output_folder_path, subdir)
-        # if not os.path.exists(output_subfolder_path):
-        #     os.makedirs(output_subfolder_path)
         for filename in os.listdir(input_subfolder_path):
             if filename.endswith('.json'):
                 with open(os.path.join(input_subfolder_path, filename), 'r', encoding='utf-8') as file:
@@ -45,39 +43,23 @@ for root, dirs, files in os.walk(folder_path):
                                     print(f"No valid eye gaze points in {filename}.")
                                     continue
 
-                                rx_all, ry_all, rz_all = zip(*coords)
+                                # 计算当前文件中所有点之间的距离
+                                distances = pdist(coords)
 
-                                desired_size = 2
-                                desired_alpha = 0.7
-
-                                rx_all = np.array(rx_all)
-                                ry_all = np.array(ry_all)
-                                rz_all = np.array(rz_all)
-
-                                fig = plt.figure()
-                                ax = fig.add_subplot(111, projection='3d')
-
-                                ax.scatter(
-                                    rx_all,
-                                    ry_all,
-                                    rz_all,
-                                    s=desired_size,
-                                    alpha=desired_alpha,
-                                )
-
-                                ax.plot(rx_all, ry_all, rz_all, linestyle='-', linewidth=1, alpha=0.5)
-
-                                ax.set_xlabel('RX')
-                                ax.set_ylabel('RY')
-                                ax.set_zlabel('RZ')
-
-                                ados_items = list(data['ados']['preTest'].items())
-                                ados_info = f"ADOS info:{ados_items[7]}"
-                                print(ados_info)
-
-                                output_filename = os.path.splitext(filename)[0] + '_3D.png'
-                                # plt.savefig(os.path.join(output_subfolder_path, output_filename))
-                                plt.show()  # Display the plot
+                                # 绘制当前文件的距离分布直方图
+                                plt.figure()
+                                plt.hist(distances, bins=50, alpha=0.7)
+                                plt.xlabel('Distance')
+                                plt.ylabel('Frequency')
+                                plt.title(f'Distance Distribution in {filename}')
+                                
+                                # 保存或显示图表
+                                output_filename = os.path.splitext(filename)[0] + '_distance_distribution.png'
+                                output_filepath = os.path.join(output_subfolder_path, output_filename)
+                                # if not os.path.exists(output_subfolder_path):
+                                #     os.makedirs(output_subfolder_path)
+                                # plt.savefig(output_filepath)
+                                plt.show()
 
                     except json.JSONDecodeError as e:
                         print(f'Invalid JSON in file: {filename}. Error: {e}')
