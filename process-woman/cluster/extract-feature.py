@@ -74,7 +74,7 @@ def find_optimal_dbscan_params(data):
     # Ensure eps_value is greater than 0.0
     if eps_value <= 0.0:
         eps_value = 0.1  # Set a default minimum value for eps
-    min_samples_value = max(1, int(len(data) * 0.01))
+    min_samples_value = max(1, int(len(data) * 0.1))
     return eps_value, min_samples_value
 
 def find_optimal_birch_params(data, max_threshold=1.0, max_branching_factor=100, n_iter=10):
@@ -122,13 +122,13 @@ def noise_ratio(labels):
 def process_combination(row, df):
     participant = row['Participant']
     stimulus = row['Stimulus']
-    trial = row['Trail']
+    trial = row['Trial']
     patient_type = row['Class']
     
-    data_subset = df[(df['Participant'] == participant) & (df['Stimulus'] == stimulus ) & (df['Trail'] == trial) & (df['Class'] == patient_type)]
+    data_subset = df[(df['Participant'] == participant) & (df['Stimulus'] == stimulus ) & (df['Trial'] == trial) & (df['Class'] == patient_type) & (df['Category Right'] == 'Fixation')]
     
-    X = data_subset['x'].values
-    Y = data_subset['y'].values
+    X = data_subset['Point of Regard Right X [px]'].values
+    Y = data_subset['Point of Regard Right Y [px]'].values
     
     points = np.column_stack((X, Y))
     # points = points[::10]
@@ -188,7 +188,7 @@ def process_combination(row, df):
 df = pd.read_csv(PathCSV)
 
 # 获取唯一的Participant和Movie组合
-unique_combinations = df[['Participant', 'Stimulus', 'Trial']].drop_duplicates()
+unique_combinations = df[['Participant', 'Stimulus', 'Trial', 'Class']].drop_duplicates()
 
 # Use multiprocessing to process the combinations
 if __name__ == '__main__':
@@ -197,7 +197,6 @@ if __name__ == '__main__':
 
     # Filter out None results
     results = [result for result in results if result is not None]
-
     # Save results to CSV
     results_df = pd.DataFrame(results)
     results_df.to_csv(OutputCSV, index=False)
