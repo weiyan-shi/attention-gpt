@@ -4,17 +4,21 @@ import numpy as np
 
 # 读取三个CSV文件
 file_paths = [
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\TrainingDataset\\ClusteringResults.csv',
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\movie\\ClusteringResults.csv',
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\woman\\ClusteringResults.csv'
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\ClusteringResults_new.csv',
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
 ]
 
 # 要保留的列
 columns_to_keep = [
-    'Patient Type', 'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
-    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score', 'DBSCAN Noise Ratio',
+    'Patient Type',
+    'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
+    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score',
     'GMM Silhouette Score', 'GMM CH Score', 'GMM DB Score',
-    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score'
+    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score',
+    'Agglomerative Silhouette Score', 'Agglomerative CH Score', 'Agglomerative DB Score',
+    'KMedoids Silhouette Score', 'KMedoids CH Score', 'KMedoids DB Score',
+    'OPTICS Silhouette Score', 'OPTICS CH Score', 'OPTICS DB Score'
 ]
 
 # 合并CSV文件
@@ -46,6 +50,6 @@ for feature in columns_to_keep[1:]:  # Skip 'Patient Type'
 
 # 将结果转换为数据框并保存
 p_values_df = pd.DataFrame(list(p_values.items()), columns=['Feature', 'P-Value'])
-p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\process-all\\PValues.csv', index=False)
+p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\PValues_new.csv', index=False)
 
 print(p_values_df)

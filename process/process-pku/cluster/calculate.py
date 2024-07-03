@@ -3,22 +3,26 @@ from scipy.stats import ttest_ind
 import numpy as np
 
 # 读取CSV文件
-results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults.csv')
+results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv')
 
 # 删除包含缺失值的行
 results_df = results_df.dropna()
 
 # 根据患者类型分组
-asd_df = results_df[results_df['Patient Type'] == 'asd']
-td_df = results_df[results_df['Patient Type'] == 'td']
+asd_df = results_df[results_df['Patient Type'] == 'ASD']
+td_df = results_df[results_df['Patient Type'] == 'TD']
 
 # 要计算的特征列表
 features = [
     'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
-    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score', 'DBSCAN Noise Ratio',
+    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score',
     'GMM Silhouette Score', 'GMM CH Score', 'GMM DB Score',
-    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score'
+    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score',
+    'Agglomerative Silhouette Score', 'Agglomerative CH Score', 'Agglomerative DB Score',
+    'KMedoids Silhouette Score', 'KMedoids CH Score', 'KMedoids DB Score',
+    'OPTICS Silhouette Score', 'OPTICS CH Score', 'OPTICS DB Score'
 ]
+
 
 # 计算各个特征的p值
 p_values = {}

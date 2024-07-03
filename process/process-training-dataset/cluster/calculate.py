@@ -3,7 +3,7 @@ from scipy.stats import ttest_ind
 import numpy as np
 
 # 读取CSV文件
-results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\TrainingDataset\\ClusteringResults.csv')
+results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\ClusteringResults_new.csv')
 
 # 删除包含缺失值的行
 results_df = results_df.dropna()
@@ -15,9 +15,12 @@ td_df = results_df[results_df['Patient Type'] == 'TD']
 # 要计算的特征列表
 features = [
     'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
-    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score', 'DBSCAN Noise Ratio',
+    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score',
     'GMM Silhouette Score', 'GMM CH Score', 'GMM DB Score',
-    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score'
+    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score',
+    'Agglomerative Silhouette Score', 'Agglomerative CH Score', 'Agglomerative DB Score',
+    'KMedoids Silhouette Score', 'KMedoids CH Score', 'KMedoids DB Score',
+    'OPTICS Silhouette Score', 'OPTICS CH Score', 'OPTICS DB Score'
 ]
 
 # 计算各个特征的p值
@@ -35,6 +38,6 @@ for feature in features:
 
 # 将结果转换为数据框并保存
 p_values_df = pd.DataFrame(list(p_values.items()), columns=['Feature', 'P-Value'])
-p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\TrainingDataset\\PValues.csv', index=False)
+p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\PValues_new.csv', index=False)
 
 print(p_values_df)
