@@ -1,27 +1,28 @@
-# Best Parameters: {'C': 100, 'gamma': 0.01, 'kernel': 'rbf'}
-# Model: SVC with best parameters
-# Accuracy: 0.6495190296946884
-#               precision    recall  f1-score   support
-
-#          ASD       0.66      0.79      0.72      1346
-#           TD       0.63      0.47      0.54      1045
-
-#     accuracy                           0.65      2391
-#    macro avg       0.65      0.63      0.63      2391
-# weighted avg       0.65      0.65      0.64      2391
-
-
+from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
+from sklearn.ensemble import RandomForestClassifier
+
+# Best Parameters: {'max_depth': 20, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
+# Accuracy: 0.680672268907563
+#               precision    recall  f1-score   support
+
+#          ASD       0.66      0.70      0.68        57
+#           TD       0.71      0.66      0.68        62
+
+#     accuracy                           0.68       119
+#    macro avg       0.68      0.68      0.68       119
+# weighted avg       0.68      0.68      0.68       119
+
+# AUC: 0.7488681380871535
 
 # 读取CSV文件
 file_paths = [
     'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\ClusteringResults_new.csv',
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
+    # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
+    # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
 ]
 
 # 要保留的列
@@ -70,13 +71,14 @@ X_test = scaler.transform(X_test)
 
 # 定义参数网格
 param_grid = {
-    'C': [0.1, 1, 10, 100],
-    'gamma': [1, 0.1, 0.01, 0.001],
-    'kernel': ['rbf', 'linear']
+    'n_estimators': [100, 200, 300],
+    'max_depth': [None, 3, 5, 7, 10, 15, 20],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
 }
 
 # 网格搜索
-grid = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, cv=5, n_jobs=-1, scoring='accuracy')
+grid = GridSearchCV(RandomForestClassifier(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
 grid.fit(X_train, y_train)
 
 # 输出最佳参数
@@ -85,8 +87,13 @@ print(f"Best Parameters: {grid.best_params_}")
 # 使用最佳参数的模型进行预测
 best_model = grid.best_estimator_
 y_pred = best_model.predict(X_test)
+y_pred_proba = best_model.predict_proba(X_test)[:, 1]
+
 
 # 输出结果
-print(f"Model: SVC with best parameters")
 print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 print(classification_report(y_test, y_pred))
+
+# 计算并输出AUC
+auc = roc_auc_score(y_test, y_pred_proba)
+print(f"AUC: {auc}")
