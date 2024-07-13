@@ -9,9 +9,6 @@ from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
 import joblib
 # 读取CSV文件
 file = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\ClusteringResults_new.csv'
-# file = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\ClusteringResults_new.csv'
-# file = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\ClusteringResults_new.csv'
-# file = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\ClusteringResults_new.csv'
 
 
 # 保留指定的列
@@ -61,20 +58,20 @@ test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 class MLP(nn.Module):
     def __init__(self):
         super(MLP, self).__init__()
-        self.fc1 = nn.Linear(21, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 64)
-        self.fc4 = nn.Linear(64,16)
-        self.fc5 = nn.Linear(16, 2)
+        self.fc1 = nn.Linear(21, 64)
+        # self.fc2 = nn.Linear(256, 128)
+        # self.fc3 = nn.Linear(128, 64)
+        self.fc4 = nn.Linear(64,21)
+        self.fc5 = nn.Linear(21, 2)
         self.dropout = nn.Dropout(0.3)
 
     def forward(self, x):
         x = torch.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = torch.relu(self.fc2(x))
-        x = self.dropout(x)
-        x = torch.relu(self.fc3(x))
-        x = self.dropout(x)
+        # x = self.dropout(x)
+        # x = torch.relu(self.fc2(x))
+        # x = self.dropout(x)
+        # x = torch.relu(self.fc3(x))
+        # x = self.dropout(x)
         x = torch.relu(self.fc4(x))
         x = self.fc5(x)
         return x
@@ -85,7 +82,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
 # 训练模型
-num_epochs = 200
+num_epochs = 20
 best_val_loss = float('inf')
 
 for epoch in range(num_epochs):
