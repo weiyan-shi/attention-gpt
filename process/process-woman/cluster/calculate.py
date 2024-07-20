@@ -34,14 +34,14 @@ for feature in features:  # Skip 'Patient Type'
         asd_normal = kstest(asd_values, 'norm', args=(asd_values.mean(), asd_values.std()))[1] > 0.05
         td_normal = kstest(td_values, 'norm', args=(td_values.mean(), td_values.std()))[1] > 0.05
         
-        if asd_normal and td_normal:
-            # 如果数据服从正态分布，使用t-test
-            t_stat, p_val = ttest_ind(asd_values, td_values)
-            print('符合')
-        else:
+        # if asd_normal and td_normal:
+        #     # 如果数据服从正态分布，使用t-test
+        #     t_stat, p_val = ttest_ind(asd_values, td_values)
+        #     print('符合')
+        # else:
             # 如果数据不服从正态分布，使用曼-惠特尼U检验
-            u_stat, p_val = mannwhitneyu(asd_values, td_values)
-            print('不符合')
+        u_stat, p_val = mannwhitneyu(asd_values, td_values)
+            # print('不符合')
         
         p_values[feature] = p_val
     else:

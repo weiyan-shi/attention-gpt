@@ -1,5 +1,5 @@
 import pandas as pd
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, mannwhitneyu, kstest, norm
 import numpy as np
 
 # 读取CSV文件
@@ -23,15 +23,26 @@ features = [
     'OPTICS Silhouette Score', 'OPTICS CH Score', 'OPTICS DB Score'
 ]
 
-
 # 计算各个特征的p值
 p_values = {}
-for feature in features:
+for feature in features:  # Skip 'Patient Type'
     asd_values = asd_df[feature]
     td_values = td_df[feature]
     
     if len(asd_values) > 1 and len(td_values) > 1:
-        t_stat, p_val = ttest_ind(asd_values, td_values)
+        # 正态性检验
+        asd_normal = kstest(asd_values, 'norm', args=(asd_values.mean(), asd_values.std()))[1] > 0.05
+        td_normal = kstest(td_values, 'norm', args=(td_values.mean(), td_values.std()))[1] > 0.05
+        
+        # if asd_normal and td_normal:
+        #     # 如果数据服从正态分布，使用t-test
+        #     t_stat, p_val = ttest_ind(asd_values, td_values)
+        #     print('符合')
+        # else:
+            # 如果数据不服从正态分布，使用曼-惠特尼U检验
+        u_stat, p_val = mannwhitneyu(asd_values, td_values)
+            # print('不符合')
+        
         p_values[feature] = p_val
     else:
         p_values[feature] = np.nan
@@ -39,6 +50,17 @@ for feature in features:
 
 # 将结果转换为数据框并保存
 p_values_df = pd.DataFrame(list(p_values.items()), columns=['Feature', 'P-Value'])
-p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\PValues_new.csv', index=False)
+
+# 应用Holm-Bonferroni校正
+p_values_df = p_values_df.sort_values(by='P-Value')
+m = len(p_values_df)
+corrected_p_values = []
+for i, (feature, p) in enumerate(p_values_df.values):
+    corrected_p = p * (m - i)
+    corrected_p_values.append(min(corrected_p, 1.0))  # Holm-Bonferroni校正
+
+p_values_df['Corrected P-Value'] = corrected_p_values
+
+p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\PValues_drq.csv', index=False)
 
 print(p_values_df)
