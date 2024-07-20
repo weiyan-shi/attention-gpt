@@ -3,7 +3,7 @@ from scipy.stats import ttest_ind, mannwhitneyu, kstest, norm
 import numpy as np
 
 # 读取CSV文件
-results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv')
+results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\ClusteringResults_new.csv')
 
 # 删除包含缺失值的行
 results_df = results_df.dropna()
@@ -12,8 +12,9 @@ results_df = results_df.dropna()
 asd_df = results_df[results_df['Patient Type'] == 'ASD']
 td_df = results_df[results_df['Patient Type'] == 'TD']
 
-# 要计算的特征列表
-features = [
+# 要保留的列
+columns_to_keep = [
+    'Patient Type',
     'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
     'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score',
     'GMM Silhouette Score', 'GMM CH Score', 'GMM DB Score',
@@ -25,7 +26,7 @@ features = [
 
 # 计算各个特征的p值
 p_values = {}
-for feature in features:  # Skip 'Patient Type'
+for feature in columns_to_keep[1:]:  # Skip 'Patient Type'
     asd_values = asd_df[feature]
     td_values = td_df[feature]
     
@@ -48,7 +49,7 @@ for feature in features:  # Skip 'Patient Type'
         p_values[feature] = np.nan
         print(f"Not enough data for {feature}")
 
-# 将结果转换为数据框并保存
+# 将结果转换为数据框
 p_values_df = pd.DataFrame(list(p_values.items()), columns=['Feature', 'P-Value'])
 
 # 应用Holm-Bonferroni校正
@@ -61,6 +62,6 @@ for i, (feature, p) in enumerate(p_values_df.values):
 
 p_values_df['Corrected P-Value'] = corrected_p_values
 
-p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\PValues_drq.csv', index=False)
+p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\PValues_drq.csv', index=False)
 
 print(p_values_df)

@@ -3,7 +3,7 @@ from scipy.stats import ttest_ind
 import numpy as np
 
 # 读取CSV文件
-results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv')
+results_df = pd.read_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\ClusteringResults_new.csv')
 
 # 删除包含缺失值的行
 results_df = results_df.dropna()
@@ -39,6 +39,6 @@ for feature in features:
 
 # 将结果转换为数据框并保存
 p_values_df = pd.DataFrame(list(p_values.items()), columns=['Feature', 'P-Value'])
-p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\PValues.csv', index=False)
+p_values_df.to_csv('C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\PValues_new.csv', index=False)
 
 print(p_values_df)
