@@ -97,10 +97,10 @@ def STR(X, labels):
     return inter_cluster_dist / intra_cluster_dist
 
 # 设置路径
-PathASD = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\TrainingData\\ASD\\'
-PathTD = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\TrainingData\\TD\\'
-PathImage = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\TrainingData\\Images\\'
-OutputCSV = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\ClusteringResults_new.csv'
+PathASD = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\TrainingData\\ASD\\'
+PathTD = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\TrainingData\\TD\\'
+PathImage = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\TrainingData\\Images\\'
+OutputCSV = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\ClusteringResults_10.csv'
 
 files = os.listdir(PathImage)
 
@@ -361,34 +361,89 @@ for file in files:
         gmm_labels = perform_gmm_clustering(points, n_components=optimal_gmm)
         gmm_scores = evaluate_clustering(points, gmm_labels)
         gmm_time = time.time() - start_time
-        
-        # Append ASD results
+
         results.append({
             'Patient Type': 'ASD',
             'Patient ID': FileName,
-            'KMeans Silhouette Score': kmeans_scores[0],
-            'KMeans CH Score': kmeans_scores[1],
-            'KMeans DB Score': kmeans_scores[2],
-            'DBSCAN Silhouette Score': dbscan_scores[0],
-            'DBSCAN CH Score': dbscan_scores[1],
-            'DBSCAN DB Score': dbscan_scores[2],
-            'GMM Silhouette Score': gmm_scores[0],
-            'GMM CH Score': gmm_scores[1],
-            'GMM DB Score': gmm_scores[2],
-            'BIRCH Silhouette Score': birch_scores[0],
-            'BIRCH CH Score': birch_scores[1],
-            'BIRCH DB Score': birch_scores[2],
-            'Agglomerative Silhouette Score': agglomerative_scores[0],
-            'Agglomerative CH Score': agglomerative_scores[1],
-            'Agglomerative DB Score': agglomerative_scores[2],
-            'KMedoids Silhouette Score': kmedoids_scores[0],
-            'KMedoids CH Score': kmedoids_scores[1],
-            'KMedoids DB Score': kmedoids_scores[2],
-            'OPTICS Silhouette Score': optics_scores[0],
-            'OPTICS CH Score': optics_scores[1],
-            'OPTICS DB Score': optics_scores[2],
+            'Stimulus': FileName,
+            'KMeans Time': kmeans_time,
+            'KMeans SC': kmeans_scores['SC'],
+            'KMeans CH': kmeans_scores['CH'],
+            'KMeans DB': kmeans_scores['DB'],
+            'KMeans CSL': kmeans_scores['CSL'],
+            'KMeans DI': kmeans_scores['DI'],
+            'KMeans DB*': kmeans_scores['DB*'],
+            'KMeans GD33': kmeans_scores['GD33'],
+            'KMeans PB': kmeans_scores['PB'],
+            'KMeans PBM': kmeans_scores['PBM'],
+            'KMeans STR': kmeans_scores['STR'],
+            'KMedoids Time': kmedoids_time,
+            'KMedoids SC': kmedoids_scores['SC'],
+            'KMedoids CH': kmedoids_scores['CH'],
+            'KMedoids DB': kmedoids_scores['DB'],
+            'KMedoids CSL': kmedoids_scores['CSL'],
+            'KMedoids DI': kmedoids_scores['DI'],
+            'KMedoids DB*': kmedoids_scores['DB*'],
+            'KMedoids GD33': kmedoids_scores['GD33'],
+            'KMedoids PB': kmedoids_scores['PB'],
+            'KMedoids PBM': kmedoids_scores['PBM'],
+            'KMedoids STR': kmedoids_scores['STR'],
+            'Agglomerative Time': agglomerative_time,
+            'Agglomerative SC': agglomerative_scores['SC'],
+            'Agglomerative CH': agglomerative_scores['CH'],
+            'Agglomerative DB': agglomerative_scores['DB'],
+            'Agglomerative CSL': agglomerative_scores['CSL'],
+            'Agglomerative DI': agglomerative_scores['DI'],
+            'Agglomerative DB*': agglomerative_scores['DB*'],
+            'Agglomerative GD33': agglomerative_scores['GD33'],
+            'Agglomerative PB': agglomerative_scores['PB'],
+            'Agglomerative PBM': agglomerative_scores['PBM'],
+            'Agglomerative STR': agglomerative_scores['STR'],
+            'BIRCH Time': birch_time,
+            'BIRCH SC': birch_scores['SC'],
+            'BIRCH CH': birch_scores['CH'],
+            'BIRCH DB': birch_scores['DB'],
+            'BIRCH CSL': birch_scores['CSL'],
+            'BIRCH DI': birch_scores['DI'],
+            'BIRCH DB*': birch_scores['DB*'],
+            'BIRCH GD33': birch_scores['GD33'],
+            'BIRCH PB': birch_scores['PB'],
+            'BIRCH PBM': birch_scores['PBM'],
+            'BIRCH STR': birch_scores['STR'],
+            'DBSCAN Time': dbscan_time,
+            'DBSCAN SC': dbscan_scores['SC'],
+            'DBSCAN CH': dbscan_scores['CH'],
+            'DBSCAN DB': dbscan_scores['DB'],
+            'DBSCAN CSL': dbscan_scores['CSL'],
+            'DBSCAN DI': dbscan_scores['DI'],
+            'DBSCAN DB*': dbscan_scores['DB*'],
+            'DBSCAN GD33': dbscan_scores['GD33'],
+            'DBSCAN PB': dbscan_scores['PB'],
+            'DBSCAN PBM': dbscan_scores['PBM'],
+            'DBSCAN STR': dbscan_scores['STR'],
+            'OPTICS Time': optics_time,
+            'OPTICS SC': optics_scores['SC'],
+            'OPTICS CH': optics_scores['CH'],
+            'OPTICS DB': optics_scores['DB'],
+            'OPTICS CSL': optics_scores['CSL'],
+            'OPTICS DI': optics_scores['DI'],
+            'OPTICS DB*': optics_scores['DB*'],
+            'OPTICS GD33': optics_scores['GD33'],
+            'OPTICS PB': optics_scores['PB'],
+            'OPTICS PBM': optics_scores['PBM'],
+            'OPTICS STR': optics_scores['STR'],
+            'GMM Time': gmm_time,
+            'GMM SC': gmm_scores['SC'],
+            'GMM CH': gmm_scores['CH'],
+            'GMM DB': gmm_scores['DB'],
+            'GMM CSL': gmm_scores['CSL'],
+            'GMM DI': gmm_scores['DI'],
+            'GMM DB*': gmm_scores['DB*'],
+            'GMM GD33': gmm_scores['GD33'],
+            'GMM PB': gmm_scores['PB'],
+            'GMM PBM': gmm_scores['PBM'],
+            'GMM STR': gmm_scores['STR'],
         })
-        
     except IndexError as e:
         print(f"IndexError for {FileName} in ASD data: {e}")
         continue
@@ -400,45 +455,59 @@ for file in files:
         X_TD, Y_TD = adjust_coordinates(X_TD, Y_TD, ImgCol, ImgRow)
         points = np.column_stack((X_TD, Y_TD))
         
+        start_time = time.time()
         optimal_k = find_optimal_kmeans_clusters(points)
         kmeans_labels = perform_kmeans_clustering(points, n_clusters=optimal_k)
         kmeans_scores = evaluate_clustering(points, kmeans_labels)
+        kmeans_time = time.time() - start_time
 
+        start_time = time.time()
         optimal_k = find_optimal_kmedoids_clusters(points)
         kmedoids_labels = perform_kmedoids_clustering(points, n_clusters=optimal_k)
         kmedoids_scores = evaluate_clustering(points, kmedoids_labels)
+        kmedoids_time = time.time() - start_time
 
+        start_time = time.time()
         optimal_k = find_optimal_agglomerative_clusters(points, max_clusters=10)
         agglomerative_labels = perform_agglomerative_clustering(points, n_clusters=optimal_k)
         agglomerative_scores = evaluate_clustering(points, agglomerative_labels)
+        agglomerative_time = time.time() - start_time
 
+        start_time = time.time()
         threshold, branching_factor = find_optimal_birch_params(points)
         birch_labels = perform_birch_clustering(points, threshold=threshold, branching_factor=branching_factor)
         birch_scores = evaluate_clustering(points, birch_labels)
+        birch_time = time.time() - start_time
 
+        start_time = time.time()
         eps, min_samples = find_optimal_dbscan_params(points)
         dbscan_labels = perform_dbscan_clustering(points, eps=eps, min_samples=min_samples)
         if len(set(dbscan_labels)) > 1:
             dbscan_scores = evaluate_clustering(points, dbscan_labels)
         else:
-            dbscan_scores = (None, None, None)
+            dbscan_scores = {key: None for key in ['SC', 'CH', 'DB', 'CSL', 'DI', 'DB*', 'GD33', 'PB', 'PBM', 'STR']}
+        dbscan_time = time.time() - start_time
 
+        start_time = time.time()
         eps, min_samples = find_optimal_optics_params(points)
         optics_labels = perform_optics_clustering(points, eps=eps, min_samples=min_samples)
         if len(set(optics_labels)) > 1:
             optics_scores = evaluate_clustering(points, optics_labels)
         else:
-            optics_scores = (None, None, None)
+            optics_scores = {key: None for key in ['SC', 'CH', 'DB', 'CSL', 'DI', 'DB*', 'GD33', 'PB', 'PBM', 'STR']}
+        optics_time = time.time() - start_time
 
+        start_time = time.time()
         optimal_gmm = find_optimal_gmm_clusters(points)
         gmm_labels = perform_gmm_clustering(points, n_components=optimal_gmm)
         gmm_scores = evaluate_clustering(points, gmm_labels)
+        gmm_time = time.time() - start_time
         
         # Append ASD results
-        results.update({
-            'Patient Type': patient_type,
-            'Participant': participant,
-            'Stimulus': movie,
+        results.append({
+            'Patient Type': 'TD',
+            'Patient ID': FileName,
+            'Stimulus': FileName,
             'KMeans Time': kmeans_time,
             'KMeans SC': kmeans_scores['SC'],
             'KMeans CH': kmeans_scores['CH'],
