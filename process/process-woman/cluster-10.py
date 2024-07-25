@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import random
 import multiprocessing as mp
 import time
-from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score, pairwise_distances
+from sklearn.metrics import pairwise_distances
 from scipy.spatial.distance import cdist
 from scipy.stats import pointbiserialr
 
@@ -97,7 +97,7 @@ plt.switch_backend('TkAgg')
 plt.ion()
 
 PathCSV = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\merged_data.csv'
-OutputCSV = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
+OutputCSV = 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_10.csv'
 
 def adjust_coordinates(x, y, max_x, max_y):
     x = np.clip(x - 1, 0, max_x - 1)
@@ -245,10 +245,21 @@ def evaluate_clustering(data, labels):
         silhouette_avg = silhouette_score(data, labels)
         ch_score = calinski_harabasz_score(data, labels)
         db_score = davies_bouldin_score(data, labels)
-        return silhouette_avg, ch_score, db_score
+        return {
+            'SC': silhouette_avg,
+            'CH': ch_score,
+            'DB': db_score,
+            'CSL': CSL(data, labels),
+            'DI': DI(data, labels),
+            'DB*': DB_star(data, labels),
+            'GD33': GD33(data, labels),
+            'PB': PB(data, labels),
+            'PBM': PBM(data, labels),
+            'STR': STR(data, labels)
+        }
     else:
-        return None, None, None
-    
+        return {key: None for key in ['SC', 'CH', 'DB', 'CSL', 'DI', 'DB*', 'GD33', 'PB', 'PBM', 'STR']}
+
 def perform_agglomerative_clustering(data, n_clusters):
     agglomerative = AgglomerativeClustering(n_clusters=n_clusters).fit(data)
     labels = agglomerative.labels_
@@ -275,7 +286,12 @@ def process_combination(row, df):
     X = data_subset['Point of Regard Right X [px]'].values
     Y = data_subset['Point of Regard Right Y [px]'].values
     
+    if len(X) == 0 or len(Y) == 0:
+        print(f"Skipping Participant={participant}, Stimulus={stimulus}, Type={patient_type} due to insufficient data points.")
+        return None
+    
     points = np.column_stack((X, Y))
+    results = {}
 
     try:
         start_time = time.time()
