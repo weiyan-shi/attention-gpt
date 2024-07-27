@@ -424,9 +424,13 @@ def process_combination(row, df):
             'GMM PBM': gmm_scores['PBM'],
             'GMM STR': gmm_scores['STR'],
         })
+
+        print(f"Processed Participant: {participant}, Stimulus: {trial+'-'+stimulus,}, Type: {patient_type}")
+        
+        return results
     
     except Exception as e:
-        print(f"Error processing Participant={participant}, Stimulus={stimulus}, Type={patient_type}: {e}")
+        print(f"Error processing Participant={participant}, Stimulus={trial+'-'+stimulus}, Type={patient_type}: {e}")
         return None
 
 df = pd.read_csv(PathCSV)
@@ -436,6 +440,8 @@ unique_combinations = df[['Participant', 'Stimulus', 'Trial', 'Class']].drop_dup
 if __name__ == '__main__':
     with mp.Pool(processes=mp.cpu_count()-6) as pool:
         results = pool.starmap(process_combination, [(row, df) for _, row in unique_combinations.iterrows()])
+
+
 
     results = [result for result in results if result is not None]
     results_df = pd.DataFrame(results)
