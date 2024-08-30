@@ -5,24 +5,24 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 
-# Best Parameters: {'max_depth': 20, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
-# Accuracy: 0.680672268907563
+# Best Parameters: {'max_depth': 15, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 100}
+# Accuracy: 0.7195357833655706
 #               precision    recall  f1-score   support
 
-#          ASD       0.66      0.70      0.68        57
-#           TD       0.71      0.66      0.68        62
+#          ASD       0.79      0.38      0.52       201
+#           TD       0.70      0.93      0.80       316
 
-#     accuracy                           0.68       119
-#    macro avg       0.68      0.68      0.68       119
-# weighted avg       0.68      0.68      0.68       119
+#     accuracy                           0.72       517
+#    macro avg       0.74      0.66      0.66       517
+# weighted avg       0.74      0.72      0.69       517
 
-# AUC: 0.7488681380871535
+# AUC: 0.7686724604823981
 
 # 读取CSV文件
 file_paths = [
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\ClusteringResults_10.csv',
+    # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\ClusteringResults_new.csv',
     # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
-    # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
 ]
 
 # 要保留的列
