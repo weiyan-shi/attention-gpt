@@ -3,37 +3,40 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
 import xgboost as xgb
+import time
 
 # Best Parameters: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 3, 'n_estimators': 200, 'subsample': 0.8}
-# Accuracy: 0.6554621848739496
+# Accuracy: 0.7058823529411765
 #               precision    recall  f1-score   support
 
-#            0       0.62      0.74      0.67        57
-#            1       0.71      0.58      0.64        62
+#            0       0.67      0.75      0.71        57
+#            1       0.75      0.66      0.70        62
 
-#     accuracy                           0.66       119
-#    macro avg       0.66      0.66      0.65       119
-# weighted avg       0.66      0.66      0.65       119
+#     accuracy                           0.71       119
+#    macro avg       0.71      0.71      0.71       119
+# weighted avg       0.71      0.71      0.71       119
 
-# AUC: 0.7192982456140351
+# AUC: 0.7792869269949065
+# Prediction execution time: 0.0019986629486083984 seconds
+
 
 # 读取CSV文件
 file_paths = [
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\TrainingDataset\\ClusteringResults_new.csv',
-    # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\ClusteringResults_10.csv',
+    # 'C:\\Users\\86178\\Desktop\\attention-gpt\\datvaset\\pku-attention\\ClusteringResults_new.csv',
     # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
 ]
 
 # 要保留的列
 columns_to_keep = [
     'Patient Type',
-    'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
-    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score',
-    'GMM Silhouette Score', 'GMM CH Score', 'GMM DB Score',
-    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score',
-    'Agglomerative Silhouette Score', 'Agglomerative CH Score', 'Agglomerative DB Score',
-    'KMedoids Silhouette Score', 'KMedoids CH Score', 'KMedoids DB Score',
-    'OPTICS Silhouette Score', 'OPTICS CH Score', 'OPTICS DB Score'
+    'KMeans SC', 'KMeans CH', 'KMeans DB', 'KMeans CSL', 'KMeans DI', 'KMeans DB*', 'KMeans GD33', 'KMeans PB', 'KMeans PBM', 'KMeans STR',
+    'KMedoids SC', 'KMedoids CH', 'KMedoids DB', 'KMedoids CSL', 'KMedoids DI', 'KMedoids DB*', 'KMedoids GD33', 'KMedoids PB', 'KMedoids PBM', 'KMedoids STR',
+    'Agglomerative SC', 'Agglomerative CH', 'Agglomerative DB', 'Agglomerative CSL', 'Agglomerative DI', 'Agglomerative DB*', 'Agglomerative GD33', 'Agglomerative PB', 'Agglomerative PBM', 'Agglomerative STR',
+    'BIRCH SC', 'BIRCH CH', 'BIRCH DB', 'BIRCH CSL', 'BIRCH DI', 'BIRCH DB*', 'BIRCH GD33', 'BIRCH PB', 'BIRCH PBM', 'BIRCH STR',
+    'DBSCAN SC', 'DBSCAN CH', 'DBSCAN DB', 'DBSCAN CSL', 'DBSCAN DI', 'DBSCAN DB*', 'DBSCAN GD33', 'DBSCAN PB', 'DBSCAN PBM', 'DBSCAN STR',
+    'OPTICS SC', 'OPTICS CH', 'OPTICS DB', 'OPTICS CSL', 'OPTICS DI', 'OPTICS DB*', 'OPTICS GD33', 'OPTICS PB', 'OPTICS PBM', 'OPTICS STR',
+    'GMM SC', 'GMM CH', 'GMM DB', 'GMM CSL', 'GMM DI', 'GMM DB*', 'GMM GD33', 'GMM PB', 'GMM PBM', 'GMM STR'
 ]
 
 # 合并CSV文件
@@ -48,13 +51,13 @@ df = results_df.dropna()
 
 # 提取特征和标签
 features = [
-    'KMeans Silhouette Score', 'KMeans CH Score', 'KMeans DB Score',
-    'DBSCAN Silhouette Score', 'DBSCAN CH Score', 'DBSCAN DB Score',
-    'GMM Silhouette Score', 'GMM CH Score', 'GMM DB Score',
-    'BIRCH Silhouette Score', 'BIRCH CH Score', 'BIRCH DB Score',
-    'Agglomerative Silhouette Score', 'Agglomerative CH Score', 'Agglomerative DB Score',
-    'KMedoids Silhouette Score', 'KMedoids CH Score', 'KMedoids DB Score',
-    'OPTICS Silhouette Score', 'OPTICS CH Score', 'OPTICS DB Score'
+'KMeans SC', 'KMeans CH', 'KMeans DB', 'KMeans CSL', 'KMeans DI', 'KMeans DB*', 'KMeans GD33', 'KMeans PB', 'KMeans PBM', 'KMeans STR',
+    'KMedoids SC', 'KMedoids CH', 'KMedoids DB', 'KMedoids CSL', 'KMedoids DI', 'KMedoids DB*', 'KMedoids GD33', 'KMedoids PB', 'KMedoids PBM', 'KMedoids STR',
+    'Agglomerative SC', 'Agglomerative CH', 'Agglomerative DB', 'Agglomerative CSL', 'Agglomerative DI', 'Agglomerative DB*', 'Agglomerative GD33', 'Agglomerative PB', 'Agglomerative PBM', 'Agglomerative STR',
+    'BIRCH SC', 'BIRCH CH', 'BIRCH DB', 'BIRCH CSL', 'BIRCH DI', 'BIRCH DB*', 'BIRCH GD33', 'BIRCH PB', 'BIRCH PBM', 'BIRCH STR',
+    'DBSCAN SC', 'DBSCAN CH', 'DBSCAN DB', 'DBSCAN CSL', 'DBSCAN DI', 'DBSCAN DB*', 'DBSCAN GD33', 'DBSCAN PB', 'DBSCAN PBM', 'DBSCAN STR',
+    'OPTICS SC', 'OPTICS CH', 'OPTICS DB', 'OPTICS CSL', 'OPTICS DI', 'OPTICS DB*', 'OPTICS GD33', 'OPTICS PB', 'OPTICS PBM', 'OPTICS STR',
+    'GMM SC', 'GMM CH', 'GMM DB', 'GMM CSL', 'GMM DI', 'GMM DB*', 'GMM GD33', 'GMM PB', 'GMM PBM', 'GMM STR'
 ]
 
 X = df[features]
@@ -74,11 +77,11 @@ X_test = scaler.transform(X_test)
 
 # 定义参数
 param_grid_xgb = {
-    'n_estimators': [100, 200, 300],
-    'learning_rate': [0.01, 0.1, 0.2],
-    'max_depth': [3, 5, 7, 10],
-    'subsample': [0.8, 1.0],
-    'colsample_bytree': [0.8, 1.0]
+    'n_estimators': [200],
+    'learning_rate': [0.1],
+    'max_depth': [3],
+    'subsample': [0.8],
+    'colsample_bytree': [0.8]
 }
 
 # 网格搜索 - XGBoost
@@ -90,7 +93,9 @@ print(f"Best Parameters: {grid_xgb.best_params_}")
 
 # 使用最佳参数的模型进行预测
 best_model = grid_xgb.best_estimator_
+start_time = time.time()
 y_pred = best_model.predict(X_test)
+end_time = time.time()
 y_pred_proba = best_model.predict_proba(X_test)[:, 1]
 
 
@@ -101,3 +106,6 @@ print(classification_report(y_test, y_pred))
 # 计算并输出AUC
 auc = roc_auc_score(y_test, y_pred_proba)
 print(f"AUC: {auc}")
+
+execution_time = end_time - start_time
+print(f"Prediction execution time: {execution_time} seconds")

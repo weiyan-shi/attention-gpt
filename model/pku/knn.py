@@ -1,30 +1,27 @@
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
-from sklearn.ensemble import RandomForestClassifier
 import time
 
-# Best Parameters: {'max_depth': 20, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
-# Accuracy: 0.7394957983193278
+# Best Parameters: {'metric': 'manhattan', 'n_neighbors': 9, 'weights': 'distance'}
+# Accuracy: 0.6928774928774929
 #               precision    recall  f1-score   support
 
-#          ASD       0.74      0.70      0.72        57
-#           TD       0.74      0.77      0.76        62
+#          asd       0.75      0.76      0.75      1090
+#           td       0.60      0.59      0.59       665
 
-#     accuracy                           0.74       119
-#    macro avg       0.74      0.74      0.74       119
-# weighted avg       0.74      0.74      0.74       119
+#     accuracy                           0.69      1755
+#    macro avg       0.67      0.67      0.67      1755
+# weighted avg       0.69      0.69      0.69      1755
 
-# AUC: 0.8276740237691002
-# AUC: 0.8276740237691002
-# Prediction execution time: 0.013013124465942383 seconds
-
+# AUC: 0.7372925432848175
+# Prediction execution time: 0.1450047492980957 seconds
 
 # 读取CSV文件
 file_paths = [
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\ClusteringResults_10.csv',
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku\\ClusteringResults_10.csv',
     # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
     # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
 ]
@@ -75,14 +72,13 @@ X_test = scaler.transform(X_test)
 
 # 定义参数网格
 param_grid = {
-    'n_estimators': [300],
-    'max_depth': [20],
-    'min_samples_split': [2],
-    'min_samples_leaf': [1]
+    'n_neighbors': [9],
+    'weights': ['distance'],
+    'metric': ['manhattan']
 }
 
 # 网格搜索
-grid = GridSearchCV(RandomForestClassifier(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
+grid = GridSearchCV(KNeighborsClassifier(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
 grid.fit(X_train, y_train)
 
 # 输出最佳参数
@@ -95,15 +91,9 @@ y_pred = best_model.predict(X_test)
 end_time = time.time()
 y_pred_proba = best_model.predict_proba(X_test)[:, 1]
 
-
 # 输出结果
 print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 print(classification_report(y_test, y_pred))
-
-# 计算并输出AUC
-auc = roc_auc_score(y_test, y_pred_proba)
-print(f"AUC: {auc}")
-
 
 # 计算并输出AUC
 auc = roc_auc_score(y_test, y_pred_proba)

@@ -1,30 +1,27 @@
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
-from sklearn.ensemble import RandomForestClassifier
 import time
 
-# Best Parameters: {'max_depth': 20, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
-# Accuracy: 0.7394957983193278
+# Best Parameters: {'C': 0.1, 'gamma': 'auto', 'kernel': 'linear'}
+# Accuracy: 0.6150870406189555
 #               precision    recall  f1-score   support
 
-#          ASD       0.74      0.70      0.72        57
-#           TD       0.74      0.77      0.76        62
+#          ASD       0.60      0.03      0.06       201
+#           TD       0.62      0.99      0.76       316
 
-#     accuracy                           0.74       119
-#    macro avg       0.74      0.74      0.74       119
-# weighted avg       0.74      0.74      0.74       119
+#     accuracy                           0.62       517
+#    macro avg       0.61      0.51      0.41       517
+# weighted avg       0.61      0.62      0.49       517
 
-# AUC: 0.8276740237691002
-# AUC: 0.8276740237691002
-# Prediction execution time: 0.013013124465942383 seconds
-
+# AUC: 0.6802380502550539
+# Prediction execution time: 0.019021987915039062 seconds
 
 # 读取CSV文件
 file_paths = [
-    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pics\\ClusteringResults_10.csv',
+    'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_10.csv',
     # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\pku-attention\\ClusteringResults_new.csv',
     # 'C:\\Users\\86178\\Desktop\\attention-gpt\\dataset\\woman\\ClusteringResults_new.csv'
 ]
@@ -75,14 +72,13 @@ X_test = scaler.transform(X_test)
 
 # 定义参数网格
 param_grid = {
-    'n_estimators': [300],
-    'max_depth': [20],
-    'min_samples_split': [2],
-    'min_samples_leaf': [1]
+    'C': [0.1],
+    'kernel': ['linear'],
+    'gamma': ['auto']
 }
 
 # 网格搜索
-grid = GridSearchCV(RandomForestClassifier(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
+grid = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
 grid.fit(X_train, y_train)
 
 # 输出最佳参数
@@ -93,20 +89,14 @@ best_model = grid.best_estimator_
 start_time = time.time()
 y_pred = best_model.predict(X_test)
 end_time = time.time()
-y_pred_proba = best_model.predict_proba(X_test)[:, 1]
-
+y_pred_decision = best_model.decision_function(X_test)
 
 # 输出结果
 print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 print(classification_report(y_test, y_pred))
 
 # 计算并输出AUC
-auc = roc_auc_score(y_test, y_pred_proba)
-print(f"AUC: {auc}")
-
-
-# 计算并输出AUC
-auc = roc_auc_score(y_test, y_pred_proba)
+auc = roc_auc_score(y_test, y_pred_decision)
 print(f"AUC: {auc}")
 
 execution_time = end_time - start_time

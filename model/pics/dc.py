@@ -1,26 +1,23 @@
 from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
-from sklearn.ensemble import RandomForestClassifier
 import time
 
-# Best Parameters: {'max_depth': 20, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
-# Accuracy: 0.7394957983193278
+# Best Parameters: {'criterion': 'gini', 'max_depth': 3, 'min_samples_leaf': 1, 'min_samples_split': 2}
+# Accuracy: 0.6050420168067226
 #               precision    recall  f1-score   support
 
-#          ASD       0.74      0.70      0.72        57
-#           TD       0.74      0.77      0.76        62
+#            0       0.59      0.56      0.58        57
+#            1       0.62      0.65      0.63        62
 
-#     accuracy                           0.74       119
-#    macro avg       0.74      0.74      0.74       119
-# weighted avg       0.74      0.74      0.74       119
+#     accuracy                           0.61       119
+#    macro avg       0.60      0.60      0.60       119
+# weighted avg       0.60      0.61      0.60       119
 
-# AUC: 0.8276740237691002
-# AUC: 0.8276740237691002
-# Prediction execution time: 0.013013124465942383 seconds
-
+# AUC: 0.6877475947934353
+# Prediction execution time: 0.0 seconds
 
 # 读取CSV文件
 file_paths = [
@@ -65,6 +62,10 @@ features = [
 X = df[features]
 y = df['Patient Type']
 
+# 使用LabelEncoder将标签转换为数值类型
+label_encoder = LabelEncoder()
+y = label_encoder.fit_transform(y)
+
 # 数据集拆分
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -75,14 +76,14 @@ X_test = scaler.transform(X_test)
 
 # 定义参数网格
 param_grid = {
-    'n_estimators': [300],
-    'max_depth': [20],
-    'min_samples_split': [2],
-    'min_samples_leaf': [1]
+    'max_depth': [None, 3, 5, 7],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'criterion': ['gini', 'entropy']
 }
 
 # 网格搜索
-grid = GridSearchCV(RandomForestClassifier(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
+grid = GridSearchCV(DecisionTreeClassifier(), param_grid, refit=True, verbose=2, cv=5, scoring='accuracy')
 grid.fit(X_train, y_train)
 
 # 输出最佳参数
@@ -95,15 +96,9 @@ y_pred = best_model.predict(X_test)
 end_time = time.time()
 y_pred_proba = best_model.predict_proba(X_test)[:, 1]
 
-
 # 输出结果
 print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 print(classification_report(y_test, y_pred))
-
-# 计算并输出AUC
-auc = roc_auc_score(y_test, y_pred_proba)
-print(f"AUC: {auc}")
-
 
 # 计算并输出AUC
 auc = roc_auc_score(y_test, y_pred_proba)
