@@ -11,7 +11,7 @@ file_paths = [
 algorithm_names = ["Cluster", "Heatmap", "Saliency", "Semantic"]
 
 # Initialize a DataFrame to store mean dwell times for all algorithms
-combined_mean_dwell_times = pd.DataFrame()
+combined_fixation_count = pd.DataFrame()
 
 # Read each CSV and extract the mean dwell times for ASD and TD
 for algo, file_path in zip(algorithm_names, file_paths):
@@ -22,27 +22,24 @@ for algo, file_path in zip(algorithm_names, file_paths):
     grouped_data = data.groupby("group").mean()
 
     # Extract only columns related to AOI Mean Dwell Times
-    mean_dwell = grouped_data.filter(like="MeanDwellTime")
+    fixation_count = grouped_data.filter(like="FixationCount")
 
     # Add algorithm name and reset AOI names to include algorithm-specific identifiers
-    mean_dwell = mean_dwell.rename(columns=lambda x: f"{algo}_{x.replace('_MeanDwellTime', '')}")
-    mean_dwell["Algorithm"] = algo  # Add algorithm name
+    fixation_count = fixation_count.rename(columns=lambda x: f"{algo}_{x.replace('_FixationCount', '')}")
+    fixation_count["Algorithm"] = algo  # Add algorithm name
 
     # Append to combined DataFrame
-    combined_mean_dwell_times = pd.concat([combined_mean_dwell_times, mean_dwell])
+    combined_fixation_count = pd.concat([combined_fixation_count, fixation_count])
 
 # Reset index to make 'group' a column for plotting
-combined_mean_dwell_times.reset_index(inplace=True)
+combined_fixation_count.reset_index(inplace=True)
 
 # Melt the DataFrame for easier plotting
-melted_data = combined_mean_dwell_times.melt(
+melted_data = combined_fixation_count.melt(
     id_vars=["group", "Algorithm"], 
     var_name="AOI", 
-    value_name="MeanDwellTime"
+    value_name="FixationCount"
 )
-
-# Sort the data for better visualization
-melted_data = melted_data.sort_values(by=["Algorithm", "AOI"])
 
 # Plotting
 plt.figure(figsize=(16, 8))
@@ -52,35 +49,23 @@ import seaborn as sns
 sns.barplot(
     data=melted_data, 
     x="AOI", 
-    y="MeanDwellTime", 
+    y="FixationCount", 
     hue="group", 
     ci="sd", 
     palette="Set2", 
     dodge=True
 )
 
-# Add vertical dashed lines to separate algorithms
-algorithm_positions = []
-current_position = 0
-for algo in algorithm_names:
-    subset = melted_data[melted_data["Algorithm"] == algo]
-    unique_aois = subset["AOI"].unique()
-    current_position += len(unique_aois)
-    algorithm_positions.append(current_position)
-
-for position in algorithm_positions[:-1]:  # Exclude the last position as it's the end
-    plt.axvline(x=position - 0.5, color="gray", linestyle="--", linewidth=1)
-
 # Add titles and labels
-plt.title("Mean Dwell Times Across AOIs for All Algorithms (Different AOI Counts)", fontsize=16)
+plt.title("Fixation Count Across AOIs for All Algorithms (Different AOI Counts)", fontsize=16)
 plt.xlabel("AOIs", fontsize=14)
-plt.ylabel("Mean Dwell Time (ms)", fontsize=14)
+plt.ylabel("Fixation Count", fontsize=14)
 plt.xticks(rotation=45, fontsize=12)
 plt.legend(title="Group", fontsize=12)
 plt.tight_layout()
 
 # Save the plot
-output_path = "mean_dwell_times_comparison_variable_aoi_counts.png"
+output_path = "fixation_count_comparison_variable_aoi_counts.png"
 plt.savefig(output_path)
 plt.show()
 
